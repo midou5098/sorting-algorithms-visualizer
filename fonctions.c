@@ -24,3 +24,10 @@ void bubble(int table[],int size,bubbly *bubblestate){
     }
 
         }
+bool checkmouse(int mx,int my,int lb,int rb,int tb,int bb){
+    if (lb<mx && mx<rb && my>tb && my<bb){
+        return true;
+    } 
+    return false;
+}
+

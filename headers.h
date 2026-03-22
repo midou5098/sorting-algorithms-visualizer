@@ -8,7 +8,6 @@
 
 #define WINDOW_HEIGHT 720
 #define WINDOW_WIDTH 1280
-#define RAND_MAX 200
 
 
 
@@ -27,3 +26,4 @@ typedef struct {
 
 
 void bubble(int table[],int size,bubbly *bubblestate);
+bool checkmouse(int mx,int my,int lb,int rb,int tb,int bb);
