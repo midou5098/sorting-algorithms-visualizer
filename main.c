@@ -1,17 +1,13 @@
 #include "headers.h"
 int table[105];
-bool bubbles =false,selected=false;
+bool bubbles =false,selected=false,inserted=false;
 int current_state=1;
 int main(void){
     bubbly *bub=(bubbly*)malloc(sizeof(bubbly));
     selecty *selectful=(selecty*)malloc(sizeof(selecty));
-    selectful->i=0;
-    selectful->j=0;
-    selectful->min=0;
-    selectful->finished=false;
-    bub->i = 0;
-    bub->j = 0;
-    bub->finished = false;
+    inserty *insertful=(inserty*)malloc(sizeof(inserty));
+    resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+    insertful->key = table[1];
     for(int i=0;i<105;i++){
         table[i] = (rand() % 421) + 100;}
     TTF_Init();
@@ -27,6 +23,7 @@ int main(void){
     SDL_Rect rect3={350,50,100,50};
     SDL_Rect rect4={500,50,100,50};
     SDL_Rect rect5={650,50,100,50};
+    SDL_Rect rect6={800,50,100,50};
 
     TTF_Font *font=TTF_OpenFont("/usr/share/fonts/liberation/LiberationSerif-Regular.ttf",20);
     SDL_Color text_color={0,0,0,255};
@@ -34,12 +31,14 @@ int main(void){
     SDL_Texture* texture=SDL_CreateTextureFromSurface(renderer,surface);
     SDL_Surface* surface2=TTF_RenderText_Solid(font,"stop",text_color);
     SDL_Texture* texture2=SDL_CreateTextureFromSurface(renderer,surface2);
-    SDL_Surface* surface3=TTF_RenderText_Solid(font,"bubble sort",text_color);
+    SDL_Surface* surface3=TTF_RenderText_Solid(font,"bubble",text_color);
     SDL_Texture* texture3=SDL_CreateTextureFromSurface(renderer,surface3);
-    SDL_Surface* surface4=TTF_RenderText_Solid(font,"selection sort",text_color);
+    SDL_Surface* surface4=TTF_RenderText_Solid(font,"selection",text_color);
     SDL_Texture* texture4=SDL_CreateTextureFromSurface(renderer,surface4);
-    SDL_Surface* surface5=TTF_RenderText_Solid(font,"reset ts",text_color);
+    SDL_Surface* surface5=TTF_RenderText_Solid(font,"insert",text_color);
     SDL_Texture* texture5=SDL_CreateTextureFromSurface(renderer,surface5);
+    SDL_Surface* surface6=TTF_RenderText_Solid(font,"reset ts",text_color);
+    SDL_Texture* texture6=SDL_CreateTextureFromSurface(renderer,surface6);
 
 
 
@@ -55,7 +54,7 @@ int main(void){
     SDL_Event event;
     int x=50;
     while (running) {
-            if(SDL_PollEvent(&event)){
+            while(SDL_PollEvent(&event)){
                 if (event.type==SDL_QUIT){
                 running=false;}
             else if (event.type==SDL_MOUSEBUTTONDOWN ){
@@ -65,44 +64,45 @@ int main(void){
                             case 1:
                                 bubbles=true;
                                 selected=false;
+                                inserted=false;
                                 break;
                             case 2:
                                 selected=true;
                                 bubbles=false;
+                                inserted=false;
                                 break;
+                            case 3:
+                            selected=false;
+                            bubbles=false;
+                            inserted=true;
+                            break;
 
                         }
                     }
                     else if (checkmouse(event.button.x,event.button.y,200,300,50,100)==true){
-                        bubbles=false;
-                        bub->i = 0;
-                        bub->j = 0;
-                        bub->finished = false;
-                        selectful->i=0;
-                        selectful->j=0;
-                        selectful->min=0;
-                        selectful->finished=false;
+                        
+                        resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+                        insertful->key = table[1];
                     }else if(checkmouse(event.button.x,event.button.y,350,450,50,100)==true){
                         current_state=1;
                     }else if(checkmouse(event.button.x,event.button.y,500,600,50,100)==true){
                         current_state=2;
                     }else if(checkmouse(event.button.x,event.button.y,650,750,50,100)==true){
+                        current_state=3;
+
+                    }
+                    else if(checkmouse(event.button.x,event.button.y,800,950,50,100)==true){
                         
                         for(int i=0;i<105;i++){
-                            bubbles=false;
-                            bub->i = 0;
-                            bub->j = 0;
-                            bub->finished = false;
-                            selectful->i=0;
-                            selectful->j=0;
-                            selectful->min=0;
-                            selectful->finished=false;
+                            
                             table[i] = (rand() % 421) + 100;
                             SDL_SetRenderDrawColor(renderer,0,0,0,255);
                             x=i*12;
                             int y=720-table[i];
                             SDL_Rect rect ={x+10,y,10,table[i]};
                             SDL_RenderFillRect(renderer,&rect);}
+                            resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+                            insertful->key = table[1];
                     }
                 
                 
@@ -115,10 +115,12 @@ int main(void){
             SDL_RenderClear(renderer);
             
             
-            if (bubbles==true){
+            if (bubbles){
                 bubble(table,105,bub);
-            }else if (selected==true){
+            }else if (selected){
                 selection(table,105,selectful);
+            }else if(inserted){
+                insert(table,105,insertful);
             }
             for(int i=0;i<105;i++){
                 if(bubbles){
@@ -147,6 +149,21 @@ int main(void){
                         SDL_SetRenderDrawColor(renderer,255,0,0,255);
                     }
                     SDL_RenderFillRect(renderer,&rect);}
+                else if(inserted){
+                    x=i*12;
+                    int y=720-table[i];
+                    SDL_Rect rect ={x+10,y,10,table[i]};
+                    if(i<insertful->i-1){
+                        SDL_SetRenderDrawColor(renderer,0,255,0,255);
+                    }else if(table[i]==insertful->key ){
+                        SDL_SetRenderDrawColor(renderer,0,0,255,255);
+                    }else if(i>selectful->i+1){
+                        SDL_SetRenderDrawColor(renderer,255,0,0,255);
+                    }else{
+                        SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                    }
+                    SDL_RenderFillRect(renderer,&rect);
+                }
                 else{
                     SDL_SetRenderDrawColor(renderer,0,0,0,255);
                     x=i*12;
@@ -171,9 +188,10 @@ int main(void){
             SDL_RenderCopy(renderer,texture3,NULL,&rect3);
             SDL_RenderCopy(renderer,texture4,NULL,&rect4);
             SDL_RenderCopy(renderer,texture5,NULL,&rect5);
-
+            SDL_RenderCopy(renderer,texture6,NULL,&rect6);
             SDL_RenderPresent(renderer);
-            SDL_SetRenderDrawColor(renderer,255,255,255,255);}
+            SDL_SetRenderDrawColor(renderer,255,255,255,255);
+            SDL_Delay(20);}
         SDL_DestroyTexture(texture);
         SDL_DestroyTexture(texture2);
         SDL_FreeSurface(surface);
@@ -184,6 +202,8 @@ int main(void){
         SDL_DestroyTexture(texture4);
         SDL_FreeSurface(surface5);
         SDL_DestroyTexture(texture5);
+        SDL_FreeSurface(surface6);
+        SDL_DestroyTexture(texture6);
         TTF_CloseFont(font);
         free(bub);
         TTF_Quit();
