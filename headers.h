@@ -19,19 +19,6 @@ typedef struct {
 }inserty;
 
 
-
-typedef struct {
-    int i;
-    int j;
-    int min;
-    bool finished ;
-}selecty;
-
-typedef struct {
-    int i;
-    int j;
-    bool finished ;
-    }bubbly;
 void insert(int table[],int size,inserty* i);
 void resetem(bubbly *bub,selecty* selectful,inserty* insertful,bool *bubbles,bool *select,bool *insert);
 void bubble(int table[],int size,bubbly *bubblestate);
