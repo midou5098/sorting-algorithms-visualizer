@@ -119,17 +119,17 @@ void merge(int table[],int size, mergy* m){
     }}
 
 
-void merge_step(int table[],mergy* m){
+bool merge_step(int table[],mergy* m){
     
     if (m->subphase==2.0){
         if(m->i>m->mid || m->j>m->right){
             if(m->i>m->mid){
-                m->subphase=2.1;
-                return;
+                m->subphase=2.2;
+                return false;
 
             }else if(m->j>m->right){
-                m->subphase=2.2;
-                return;
+                m->subphase=2.1;
+                return false;
             }
         }
         if (table[m->i]<table[m->j]){
@@ -141,29 +141,33 @@ void merge_step(int table[],mergy* m){
             m->j++;
             m->k++;
         }
-        return;
+        return false;
     }else if (m->subphase==2.1){
         m->temp[m->k]=table[m->i];
         m->i++;
         m->k++;
-        m->temp_size++;
         if(m->i>m->mid){
-            m->k=0;
-            m->subphase=2.3;}
+            m->subphase=2.2;}
         
-        return;
+        return false;
     }else if (m->subphase==2.2){
         m->temp[m->k]=table[m->j];
         m->j++;
         m->k++;
-        m->temp_size++;
         if(m->j>m->right){
+            m->temp_size=m->right-m->left +1;
             m->k=0;
-            m->subphase=2.3;}
-    return;}
+            m->subphase=2.3;
+        }
+    return false;}
     else if (m->subphase==2.3){
+        if(m->k==m->temp_size){
+            m->subphase=0;
+            return true;
+        }
         table[m->left+m->k]=m->temp[m->k];
         m->k++;
+        return false;
 
     }
 
