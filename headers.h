@@ -9,7 +9,21 @@
 
 
 
-
+typedef struct{
+    int left;
+    int right;
+    int pivot;
+}stacky;
+typedef struct{
+    stacky stack[200];
+    int stack_top;
+    int phase;
+    int left;
+    int right;
+    int pivot;
+    int i;
+    int j;
+}quicky;
 
 typedef struct {
     int i;
