@@ -84,13 +84,20 @@ void merge(int table[],int size, mergy* m){
     if (m->finished){
         return;
     }
-    if(m->stack_top=-1){
+    if(m->stack_top==-1){
         m->finished=true;
+        return;
+    }
+    if (m->subphase != 0){
+        if (merge_step(table,m)){
+            m->subphase=0;
+            m->stack_top--;
+        }
         return;
     }
     m->left=m->stack[m->stack_top].left;
     m->right=m->stack[m->stack_top].right;
-    m->phase=m->stack[m->stack_top].left;
+    m->phase=m->stack[m->stack_top].phase;
     if (m->left==m->right){
         m->stack_top--;
         return;
@@ -109,26 +116,26 @@ void merge(int table[],int size, mergy* m){
         m->stack[m->stack_top].right=m->right;
         m->stack[m->stack_top].phase=0;
     }else if(m->phase==2){
-        m->i = m->left;
-        m->j =m->mid + 1;
-        m->k =0;
-        m->subphase =2.0;
-        if(merge_step(table,m)){
-            m->stack_top--;
-        }
+        int temp_size = m->right - m->left + 1;
+        if (m->subphase == 0) {
+            m->i = m->left;
+            m->j = m->mid + 1;
+            m->k = 0;
+            m->subphase = 20;}
+
     }}
 
 
 bool merge_step(int table[],mergy* m){
     
-    if (m->subphase==2.0){
+    if (m->subphase==20){
         if(m->i>m->mid || m->j>m->right){
             if(m->i>m->mid){
-                m->subphase=2.2;
+                m->subphase=22;
                 return false;
 
             }else if(m->j>m->right){
-                m->subphase=2.1;
+                m->subphase=21;
                 return false;
             }
         }
@@ -142,27 +149,28 @@ bool merge_step(int table[],mergy* m){
             m->k++;
         }
         return false;
-    }else if (m->subphase==2.1){
+    }else if (m->subphase==21){
         m->temp[m->k]=table[m->i];
         m->i++;
         m->k++;
         if(m->i>m->mid){
-            m->subphase=2.2;}
+            m->subphase=22;}
         
         return false;
-    }else if (m->subphase==2.2){
+    }else if (m->subphase==22){
         m->temp[m->k]=table[m->j];
         m->j++;
         m->k++;
         if(m->j>m->right){
             m->temp_size=m->right-m->left +1;
             m->k=0;
-            m->subphase=2.3;
+            m->subphase=23;
         }
-    return false;}
-    else if (m->subphase==2.3){
+        return false;
+        
+    }
+    else if (m->subphase==23){
         if(m->k==m->temp_size){
-            m->subphase=0;
             return true;
         }
         table[m->left+m->k]=m->temp[m->k];
@@ -247,7 +255,7 @@ bool merge_step(int table[],mergy* m){
 
 
 
-void resetem(bubbly *bub,selecty* selectful,inserty* insertful,bool *bubbles,bool *select,bool *insert){
+void resetem(bubbly *bub,selecty* selectful,inserty* insertful,mergy* mergyful,bool *bubbles,bool *select,bool *insert,bool *merged){
     *bubbles=false;
     bub->i = 0;
     bub->j = 0;
@@ -261,6 +269,16 @@ void resetem(bubbly *bub,selecty* selectful,inserty* insertful,bool *bubbles,boo
     insertful->finished=false;
     insertful->i=1;
     insertful->j=0;
+    *merged=false;
+    mergyful->stack_top = -1;  
+    mergyful->stack_top++;
+    mergyful->stack[0].left = 0;
+    mergyful->stack[0].right = 104;
+    mergyful->stack[0].phase = 0;
+    mergyful->finished = false;
+    mergyful->temp = (int*)malloc(105 * sizeof(int));
+    mergyful->temp_size = 0;
+    mergyful->subphase = 0;
 }
 
 

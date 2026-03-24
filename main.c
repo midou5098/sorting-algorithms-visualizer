@@ -1,12 +1,13 @@
 #include "headers.h"
 int table[105];
-bool bubbles =false,selected=false,inserted=false;
+bool bubbles =false,selected=false,inserted=false,merged=false;
 int current_state=1;
 int main(void){
     bubbly *bub=(bubbly*)malloc(sizeof(bubbly));
     selecty *selectful=(selecty*)malloc(sizeof(selecty));
     inserty *insertful=(inserty*)malloc(sizeof(inserty));
-    resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+    mergy *mergyful=(mergy*)malloc(sizeof(mergy));
+    resetem(bub, selectful, insertful, mergyful, &bubbles, &selected, &inserted, &merged);
     insertful->key = table[1];
     for(int i=0;i<105;i++){
         table[i] = (rand() % 421) + 100;}
@@ -24,6 +25,7 @@ int main(void){
     SDL_Rect rect4={500,50,100,50};
     SDL_Rect rect5={650,50,100,50};
     SDL_Rect rect6={800,50,100,50};
+    SDL_Rect rect7={950,50,100,50};
 
     TTF_Font *font=TTF_OpenFont("/usr/share/fonts/liberation/LiberationSerif-Regular.ttf",20);
     SDL_Color text_color={0,0,0,255};
@@ -37,9 +39,10 @@ int main(void){
     SDL_Texture* texture4=SDL_CreateTextureFromSurface(renderer,surface4);
     SDL_Surface* surface5=TTF_RenderText_Solid(font,"insert",text_color);
     SDL_Texture* texture5=SDL_CreateTextureFromSurface(renderer,surface5);
-    SDL_Surface* surface6=TTF_RenderText_Solid(font,"reset ts",text_color);
+    SDL_Surface* surface6=TTF_RenderText_Solid(font,"merge",text_color);
     SDL_Texture* texture6=SDL_CreateTextureFromSurface(renderer,surface6);
-
+    SDL_Surface* surface7=TTF_RenderText_Solid(font,"reset ts",text_color);
+    SDL_Texture* texture7=SDL_CreateTextureFromSurface(renderer,surface7);
 
 
 
@@ -65,23 +68,32 @@ int main(void){
                                 bubbles=true;
                                 selected=false;
                                 inserted=false;
+                                merged=false;
                                 break;
                             case 2:
                                 selected=true;
                                 bubbles=false;
                                 inserted=false;
+                                merged=false;
                                 break;
                             case 3:
-                            selected=false;
-                            bubbles=false;
-                            inserted=true;
-                            break;
+                                selected=false;
+                                bubbles=false;
+                                inserted=true;
+                                merged=false;
+                                break;
+                            case 4:
+                                selected=false;
+                                bubbles=false;
+                                inserted=false;
+                                merged=true;
+                                break;
 
                         }
                     }
                     else if (checkmouse(event.button.x,event.button.y,200,300,50,100)==true){
                         
-                        resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+                        resetem(bub, selectful, insertful, mergyful, &bubbles, &selected, &inserted, &merged);
                         insertful->key = table[1];
                     }else if(checkmouse(event.button.x,event.button.y,350,450,50,100)==true){
                         current_state=1;
@@ -89,9 +101,10 @@ int main(void){
                         current_state=2;
                     }else if(checkmouse(event.button.x,event.button.y,650,750,50,100)==true){
                         current_state=3;
-
+                    }else if(checkmouse(event.button.x,event.button.y,800,900,50,100)==true){
+                        current_state=4;
                     }
-                    else if(checkmouse(event.button.x,event.button.y,800,950,50,100)==true){
+                    else if(checkmouse(event.button.x,event.button.y,950,1050,50,100)==true){
                         
                         for(int i=0;i<105;i++){
                             
@@ -101,7 +114,7 @@ int main(void){
                             int y=720-table[i];
                             SDL_Rect rect ={x+10,y,10,table[i]};
                             SDL_RenderFillRect(renderer,&rect);}
-                            resetem(bub,selectful,insertful,&bubbles,&selected,&inserted);
+                            resetem(bub, selectful, insertful, mergyful, &bubbles, &selected, &inserted, &merged);
                             insertful->key = table[1];
                     }
                 
@@ -121,7 +134,10 @@ int main(void){
                 selection(table,105,selectful);
             }else if(inserted){
                 insert(table,105,insertful);
+            }else if(merged){
+                merge(table,105,mergyful);
             }
+
             for(int i=0;i<105;i++){
                 if(bubbles){
                     x=i*12;
@@ -157,12 +173,46 @@ int main(void){
                         SDL_SetRenderDrawColor(renderer,0,255,0,255);
                     }else if(table[i]==insertful->key ){
                         SDL_SetRenderDrawColor(renderer,0,0,255,255);
-                    }else if(i>selectful->i+1){
+                    }else if(i>insertful->i+1){
                         SDL_SetRenderDrawColor(renderer,255,0,0,255);
                     }else{
                         SDL_SetRenderDrawColor(renderer,0,0,0,255);
                     }
                     SDL_RenderFillRect(renderer,&rect);
+                }else if (merged){
+                    if (mergyful->finished){
+                        for(int i=0;i<105;i++){
+                            
+                            SDL_SetRenderDrawColor(renderer,0,255,0,255);
+                            x=i*12;
+                            int y=720-table[i];
+                            SDL_Rect rect ={x+10,y,10,table[i]};
+                            SDL_RenderFillRect(renderer,&rect);}
+                    }
+                    x=i*12;
+                    int y=720-table[i];
+                    SDL_Rect rect ={x+10,y,10,table[i]};
+                    if(mergyful->subphase==20){
+                        if(i==mergyful->j || i==mergyful->i){
+                            SDL_SetRenderDrawColor(renderer,0,0,255,255);
+                        }else{
+                            SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                        }
+                    }else if(mergyful->subphase==21 || mergyful->subphase==22){
+                        if(i==mergyful->i){
+                            SDL_SetRenderDrawColor(renderer,0,0,255,255);
+                        }else{
+                            SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                        }
+                    }else if(mergyful->subphase==23){
+                        if(i == mergyful->left + mergyful->k){
+                            SDL_SetRenderDrawColor(renderer,0,0,255,255);
+                        }else{
+                            SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                        }
+                    }else{
+                        SDL_SetRenderDrawColor(renderer,0,0,0,255);  // ← this is what's missing
+                    }SDL_RenderFillRect(renderer,&rect);
                 }
                 else{
                     SDL_SetRenderDrawColor(renderer,0,0,0,255);
@@ -181,17 +231,15 @@ int main(void){
             
             }
             SDL_SetRenderDrawColor(renderer,60,60,60,255);
-            SDL_RenderFillRect(renderer, &rect1);
-            SDL_RenderFillRect(renderer, &rect2);
             SDL_RenderCopy(renderer,texture,NULL,&rect1);
             SDL_RenderCopy(renderer,texture2,NULL,&rect2);
             SDL_RenderCopy(renderer,texture3,NULL,&rect3);
             SDL_RenderCopy(renderer,texture4,NULL,&rect4);
             SDL_RenderCopy(renderer,texture5,NULL,&rect5);
             SDL_RenderCopy(renderer,texture6,NULL,&rect6);
+            SDL_RenderCopy(renderer,texture7,NULL,&rect7);
             SDL_RenderPresent(renderer);
-            SDL_SetRenderDrawColor(renderer,255,255,255,255);
-            SDL_Delay(20);}
+            SDL_SetRenderDrawColor(renderer,255,255,255,255);}
         SDL_DestroyTexture(texture);
         SDL_DestroyTexture(texture2);
         SDL_FreeSurface(surface);

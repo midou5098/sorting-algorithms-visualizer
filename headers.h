@@ -46,7 +46,7 @@ typedef struct{
     
     int left,right;
     int phase;
-    float subphase;
+    int subphase;
     
     
     
@@ -68,7 +68,9 @@ typedef struct{
 
 
 void insert(int table[],int size,inserty* i);
-void resetem(bubbly *bub,selecty* selectful,inserty* insertful,bool *bubbles,bool *select,bool *insert);
+void resetem(bubbly *bub,selecty* selectful,inserty* insertful,mergy* mergyful,bool *bubbles,bool *select,bool *insert,bool *merged);
 void bubble(int table[],int size,bubbly *bubblestate);
 bool checkmouse(int mx,int my,int lb,int rb,int tb,int bb);
 void selection(int table[],int size,selecty* select);
+bool merge_step(int table[],mergy* m);
+void merge(int table[],int size, mergy* m);
