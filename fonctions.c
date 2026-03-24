@@ -184,9 +184,66 @@ bool merge_step(int table[],mergy* m){
 
     
 
+void quick(int table[],int size,quicky* q){
+    if (q->finished==true){
+        return;
+    }
+    q->left=q->std[q->stack_top].left;
+    q->right=q->std[q->stack_top].right;
+    q->pivot_index=q->right;
+    q->pivot=table[q->pivot_index];
+    int x;
+    if (q->phase==0){
+        if(q->init==true){
+            q->pivot = table[q->right];
+            
+        }
+        if(q->j>=q->right){
+            q->i++;
+            x=table[q->pivot_index];
+            table[q->pivot_index]=table[q->i];
+            table[q->i]=x;
+            q->j=q->i+1;
+            q->phase=1;
+            return;
+        }
+        if(table[q->j]<=q->pivot){
+            q->i++;
+            x=table[q->i];
+            table[q->i]=table[q->j];
+            table[q->j]=x;
+            q->j++;
+        }else{
+            q->j++;
+        }
+        
+        
 
 
 
+    }else if (q->phase==1){
+        q->stack_top--;
+        if (q->left<=q->pivot_index-1){
+            q->stack_top++;
+            q->std[q->stack_top].left=q->left;
+            q->std[q->stack_top].right=q->pivot_index-1;
+        }
+        if(q->pivot_index+1<=q->right){
+            q->stack_top++;
+            q->std[q->stack_top].left=q->pivot_index+1;
+            q->std[q->stack_top].right=q->right;
+        }
+        
+        if (q->stack_top==-1){
+            q->finished=true;
+            return;
+        }
+        q->phase=0;
+        q->i=0;
+        q->init=true;
+        return;
+    }
+}
 
 
 
@@ -255,7 +312,9 @@ bool merge_step(int table[],mergy* m){
 
 
 
-void resetem(bubbly *bub,selecty* selectful,inserty* insertful,mergy* mergyful,bool *bubbles,bool *select,bool *insert,bool *merged){
+
+
+void resetem(bubbly *bub,selecty* selectful,inserty* insertful,mergy* mergyful,quicky *quickyful,bool *bubbles,bool *select,bool *insert,bool *merged ,bool *quicked){
     *bubbles=false;
     bub->i = 0;
     bub->j = 0;
@@ -279,6 +338,18 @@ void resetem(bubbly *bub,selecty* selectful,inserty* insertful,mergy* mergyful,b
     mergyful->temp = (int*)malloc(105 * sizeof(int));
     mergyful->temp_size = 0;
     mergyful->subphase = 0;
+    *quicked=false;
+    quickyful->init=true;
+    quickyful->stack_top = -1;  
+    quickyful->stack_top++;
+    quickyful->std[0].left = 0;
+    quickyful->std[0].right = 104;
+    quickyful->finished = false;
+    quickyful->phase=0;
+    quickyful->i=0;
+    quickyful->j=0;
+    quickyful->pivot_index=0;
+    quickyful->pivot=0;
 }
 
 
